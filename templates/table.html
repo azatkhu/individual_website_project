@@ -1,0 +1,11 @@
+<h1>ТАБЛИЦА</h1>
+
+{% if error is not none %}
+    {{error}}
+{% endif %}
+
+{% if table is not none %}
+    {{table | safe}}
+{% endif %}
+
+<a href="http://127.0.0.1:8000/selectcolumns"> ОБРАТНО К ВЫБОРУ СТОЛБЦОВ </a>

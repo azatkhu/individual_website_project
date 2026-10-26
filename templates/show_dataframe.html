@@ -1,0 +1,12 @@
+<h1> СТОЛБЦЫ ДАТАФРЕЙМА </h1>
+
+<form action = "http://127.0.0.1:8000/table" method = "get">
+    {% for col in columns %}
+
+    <input type = "checkbox" name = "cols" value = "{{col}}">
+    {{col}}
+    <br> 
+    
+    {% endfor %}
+    <button type = "submit">ПОКАЗАТЬ</button>
+</form>
