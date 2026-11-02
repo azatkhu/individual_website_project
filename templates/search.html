@@ -1,0 +1,45 @@
+<head>
+
+    <title> Поиск </title>
+    <link href = "/static/style.css" rel = "stylesheet">
+     
+</head>
+
+<h1> ПОИСК ПО ИНДЕКСУ </h1>
+
+{% if error is not none %}
+    <p style = "color: red;"> {{error}} </p>
+{% endif %}
+
+<form action = "http://127.0.0.1:8000/search_by_id" method = "get">
+
+    <input type = "text" name = "transaction_id" value = {{ selected_transaction_id or '' }}> 
+    <input type = "submit" value = "Отправить">
+    
+</form>
+
+{% if selected_row is not none %}
+
+    <a href = "http://127.0.0.1:8000/"> НА ГЛАВНУЮ СТРАНИЦУ </a>
+
+    <table border = 1>
+
+        <tr>
+            <th scope = "col"> колонка </th>
+            <th scope = "col"> значение </th>
+        </tr>
+
+        {% for key, value in selected_row.items() %}
+
+            <tr> 
+                <td> {{key}} </td>
+                <td> {{value}} </td>
+            </tr>
+
+        {% endfor %}
+
+    </table>
+
+{% endif %}
+
+<a href = "http://127.0.0.1:8000/"> НА ГЛАВНУЮ СТРАНИЦУ </a>

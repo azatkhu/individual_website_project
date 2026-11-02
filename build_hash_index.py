@@ -1,3 +1,6 @@
+from structures.hash_table import MyHashMap
+
+
 def build_hash_index(values):
     index = MyHashMap()
 

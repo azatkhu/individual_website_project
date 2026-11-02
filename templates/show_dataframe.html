@@ -1,4 +1,13 @@
+<head>
+
+    <title> Выбрать столбцы </title>
+    <link href = "/static/style.css" rel = "stylesheet">
+     
+</head>
+
 <h1> СТОЛБЦЫ ДАТАФРЕЙМА </h1>
+
+<a href = "http://127.0.0.1:8000/"> На главную страницу </a>
 
 <form action = "http://127.0.0.1:8000/table" method = "get">
     {% for col in columns %}
@@ -8,5 +17,7 @@
     <br> 
     
     {% endfor %}
+    <br>
+    
     <button type = "submit">ПОКАЗАТЬ</button>
 </form>
