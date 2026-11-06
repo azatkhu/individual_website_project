@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Request, Query
+from fastapi.params import Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from typing import List
 
+from auth import check_credentials, login_user, get_current_user, logout_user
 from build_hash_index import build_hash_index
 from get_dataframe import get_dataframe
 from columns_count_validation import check_error_return_html_table
@@ -27,8 +29,24 @@ keys = series.tolist()
 
 hash_index = build_hash_index(keys)
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
+def require_user(request: Request):
+
+    user = get_current_user(request)
+
+    if user is None:
+        return RedirectResponse(url = "/login", status_code = 302)
+
+    return user
+
+@app.get("/homepage", response_class=HTMLResponse)
 def read_root(request: Request):
+
+    user = require_user(request)
+
+    if isinstance(user, RedirectResponse):
+        return user 
+
     return templates.TemplateResponse(
         request=request,
         name = "homepage.html",
@@ -37,6 +55,11 @@ def read_root(request: Request):
 
 @app.get("/selectcolumns", response_class=HTMLResponse)
 def choose_columns(request: Request):
+
+    user = require_user(request)
+
+    if isinstance(user, RedirectResponse):
+        return user 
 
     return templates.TemplateResponse(
         request = request, 
@@ -48,6 +71,11 @@ def choose_columns(request: Request):
 
 @app.get("/table", response_class=HTMLResponse)
 def show_table(request: Request, cols: List[str] = Query(default = [])):
+
+    user = require_user(request)
+
+    if isinstance(user, RedirectResponse):
+        return user 
 
     table_html, error = check_error_return_html_table(df = df, list_cols = cols)
 
@@ -64,6 +92,11 @@ def show_table(request: Request, cols: List[str] = Query(default = [])):
 @app.get("/search_by_id", response_class=HTMLResponse)
 def search(request: Request, transaction_id: str = None):
     
+    user = require_user(request)
+
+    if isinstance(user, RedirectResponse):
+        return user 
+
     row = None
     error = None
 
@@ -86,3 +119,31 @@ def search(request: Request, transaction_id: str = None):
         }
     )
 
+@app.get("/login", response_class=HTMLResponse)
+def st_login(request: Request, error: str = None):
+
+    return templates.TemplateResponse(
+        request = request,
+        name = "login.html",
+        context = {"error": error},
+    )
+
+@app.post("/api/login")
+def login(request: Request, username: str = Form(), password: str = Form()):
+
+    if not check_credentials(username, password):
+        
+        return RedirectResponse(url = "/login?error=wrong", status_code = 302)
+        
+    response = RedirectResponse(url = "/homepage", status_code = 302)
+    login_user(response, username)
+
+    return response 
+
+@app.post("/api/logout", response_class = RedirectResponse)
+def logout(request: Request):
+    
+    response = RedirectResponse(url = "/login", status_code = 302)
+    logout_user(request, response)
+
+    return response 
